@@ -1,0 +1,46 @@
+{
+  "name": "@rnd7/rum-temporary-storage",
+  "version": "1.0.0",
+  "description": "Rumbullion Temporary Storage",
+  "module": "dist/rum-temporary-storage-es.js",
+  "main": "dist/rum-temporary-storage-cjs.js",
+  "browser": "dist/rum-temporary-storage-browser.js",
+  "rum": {
+    "maker": {
+      "entry": "src/index.js"
+    },
+    "tester": {}
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "test-rum",
+    "build": "make-rum"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rnd7/rum-temporary-storage.git"
+  },
+  "keywords": [
+    "rum",
+    "rumbullion",
+    "storage",
+    "es6",
+    "temporary",
+    "cache"
+  ],
+  "author": "rnd7",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rnd7/rum-temporary-storage/issues"
+  },
+  "homepage": "https://github.com/rnd7/rum-temporary-storage#readme",
+  "dependencies": {
+    "@rnd7/rum-storage": "^1.0.9"
+  },
+  "devDependencies": {
+    "@rnd7/rum-maker": "^1.0.18",
+    "@rnd7/rum-tester": "^1.0.20"
+  }
+}
