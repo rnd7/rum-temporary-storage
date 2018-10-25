@@ -1,5 +1,5 @@
 # Rumbullion Temporary Storage
-Temporary Storage Class used within the Rumbullion toolkit.
+Temporary Storage Class used within the Rumbullion toolkit. Data stored will timeout after a given period of time when not changed or at least listed.
 
 See also:
 
@@ -20,7 +20,7 @@ npm i @rnd7/rum-temporary-storage
 
 Via script tag
 ```
-<script src="node_modules/@rnd7/rum-temporary-storage/dist/rum-storage-browser.js"></script>
+<script src="node_modules/@rnd7/rum-temporary-storage/dist/rum-temporary-storage-browser.js"></script>
 ```
 
 Using require
@@ -58,10 +58,9 @@ TemporaryStorage Defaults:
 }
 ```
 
-You might also pass all Storage options.
+You might also pass all [Storage](https://github.com/rnd7/rum-storage) options.
 
-### Inherited from Storage
-TemporaryStorage extends Storage.
+### Inherited from [Storage](https://github.com/rnd7/rum-storage).
 ```javascript
 insert(record)
 list()
@@ -72,10 +71,28 @@ replace(record)
 remove(recordOrIndex)
 ```
 
+### get/set scheduler
+The wipe procedure will be invoked automatically when true.
+```javascript
+scheduler = true || false
+```
+
+### schedule
+Schedule a wipe manually.
+```javascript
+schedule(time)
+```
+
+### wipe
+Wipe all outdated data manually. Usually not necessary.
+```javascript
+wipe()
+```
+
 ## Development
 
 ### Installation
-Install dependencies such as rum-maker and rum-tester
+Install dependencies such as rum-tester, rum-maker and rum-publisher
 ```bash
 npm install
 ```
@@ -90,6 +107,12 @@ npm run build
 Run Tests
 ```bash
 npm test
+```
+
+### Publish
+Publish to github and npm using
+```bash
+npx publish-rum -m "My commit message"
 ```
 
 ## License

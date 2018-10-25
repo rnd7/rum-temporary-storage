@@ -37,11 +37,11 @@
   },
   "homepage": "https://github.com/rnd7/rum-temporary-storage#readme",
   "dependencies": {
-    "@rnd7/rum-storage": "^1.0.9"
+    "@rnd7/rum-storage": "^1.0.11"
   },
   "devDependencies": {
-    "@rnd7/rum-maker": "^1.0.18",
-    "@rnd7/rum-publisher": "^1.0.54",
+    "@rnd7/rum-maker": "^1.0.19",
+    "@rnd7/rum-publisher": "^1.0.55",
     "@rnd7/rum-tester": "^1.0.20"
   }
 }

@@ -11,13 +11,17 @@ const TEST_DATA = {
   someObject:{ isNested: true },
 }
 
+const TTL = 500
+
 describe('Rumbullion Temporary Storage', () => {
   let storage
   describe('instantiation', () => {
     it('constructor', () => {
-      storage = new TemporaryStorage()
+      storage = new TemporaryStorage({
+        ttl: TTL
+      })
     })
-    it('should be instance of Storage', () => {
+    it('should be instance of TemporaryStorage', () => {
       assert.equal(true, storage instanceof TemporaryStorage)
     })
   })
@@ -233,7 +237,7 @@ describe('Rumbullion Temporary Storage', () => {
       promise = storage.list()
       assert.equal(true, promise instanceof Promise)
     })
-    it('the Promise should resolve with an array containg the test sid', (done)=>{
+    it('the Promise should resolve with an array containg only the test sid', (done)=>{
       promise.then(
         (result) => {
           assert.equal(true, result.length == 1 && result.includes(TEST_SID) )
@@ -241,14 +245,33 @@ describe('Rumbullion Temporary Storage', () => {
       ).finally(done)
     })
   })
+
+  describe('data should timeout', () => {
+    let promise
+    it('find by sid', () => {
+      promise = storage.find(TEST_SID)
+      assert.equal(true, promise instanceof Promise)
+    })
+    it('the promise should resolve with the expected object', (done)=>{
+      promise.then(
+        (result) => {
+          assert.equal(true, result.sid === TEST_SID)
+        }
+      ).finally(done)
+    })
+    it('after '+ TTL + ' msec the timer should complete', (done)=>{
+      setTimeout(done, TTL+100) // give em some time
+    })
+    it('list should return a Promise', () => {
+      promise = storage.list()
+      assert.equal(true, promise instanceof Promise)
+    })
+    it('the Promise should resolve with an array containing no records', (done)=>{
+      promise.then(
+        (result) => {
+          assert.equal(true, result.length == 0 )
+        }
+      ).finally(done)
+    })
+  })
 })
-
-/*
-
-it('resolves', (done) => {
-  resolvingPromise.then( (result) => {
-    expect(result).to.equal('promise resolved');
-  }).finally(done);
-});
-
-  assert.equal(true, storage._cache === Object(storage._cache))*/
