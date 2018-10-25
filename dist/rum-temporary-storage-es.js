@@ -1,4 +1,4 @@
-import Storage from '@rnd7/rum-storage';
+import { Storage } from '@rnd7/rum-storage';
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -99,11 +99,9 @@ function _get(target, property, receiver) {
   return _get(target, property, receiver || target);
 }
 
-console.log(Storage);
 var TEMPORARY_STORAGE_DEFAULTS = {
   scheduler: true,
   ttl: 1000 * 60 * 60 * 24,
-  minWipeInterval: 1000 * 60,
   touchOnFind: true,
   touchOnList: true
 };
@@ -113,51 +111,46 @@ function (_Storage) {
   _inherits(TemporaryStorage, _Storage);
 
   function TemporaryStorage(opts) {
+    var _this;
+
     _classCallCheck(this, TemporaryStorage);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(TemporaryStorage).call(this, opts));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(TemporaryStorage).call(this, Object.assign({}, TEMPORARY_STORAGE_DEFAULTS, opts)));
+    _this._touched = {};
+    _this._wipe = _this.wipe.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this._nextWipe = 0;
+    _this._lastWipe = 0;
+    return _this;
   }
 
   _createClass(TemporaryStorage, [{
-    key: "_init",
-    value: function _init() {
-      _get(_getPrototypeOf(TemporaryStorage.prototype), "_init", this).call(this);
-
-      this._touched = {};
-      this._wipe = this.wipe.bind(this);
-      this._scheduled;
-      this._nextWipe;
-      this._lastWipe;
-    }
-  }, {
     key: "schedule",
     value: function schedule(time) {
       if (!this._scheduler) return;
 
-      if (this._nextWipe > time) {
-        var _now = Date.now();
+      if (!this._nextWipe || this._nextWipe > time) {
+        var now = Date.now();
+        this._nextWipe = time; //Math.max(this._lastWipe + this.minWipeInterval, time)
 
-        this._nextWipe = Math.max(this._lastWipe + this.minWipeInterval, time);
         if (this._scheduled) this._scheduled = clearTimeout(this._scheduled);
-
-        if (this._nextWipe < Number.MAX_SAFE_INTEGER) {
-          this._scheduled = setTimeout(this._wipe, this._nextWipe - _now);
-        }
+        this._scheduled = setTimeout(this._wipe, this._nextWipe - now);
       }
     }
   }, {
     key: "wipe",
     value: function wipe() {
-      var limit = Date.now() - this.ttl;
-      var next = Number.MAX_SAFE_INTEGER;
+      var now = Date.now();
+      var limit = now - this.ttl;
+      var next = 0;
 
       for (var sid in this._touched) {
         var t = this._touched[sid];
-        if (t <= limit) this.remove(sid);else if (t < next) next = t;
+        if (t <= limit) this.remove(sid);else if (next == 0 || t < next) next = t;
       }
 
+      this._nextWipe = 0;
       this._lastWipe = now;
-      this.schedule(next + this.ttl);
+      if (next) this.schedule(next + this.ttl);
     }
   }, {
     key: "touch",
@@ -169,10 +162,10 @@ function (_Storage) {
   }, {
     key: "insert",
     value: function insert(record) {
-      var _this = this;
+      var _this2 = this;
 
       return _get(_getPrototypeOf(TemporaryStorage.prototype), "insert", this).call(this, record).then(function (result) {
-        _this.touch(_this.indexIn(record));
+        _this2.touch(_this2.indexIn(record));
 
         return result;
       });
@@ -180,10 +173,10 @@ function (_Storage) {
   }, {
     key: "list",
     value: function list() {
-      var _this2 = this;
+      var _this3 = this;
 
       return _get(_getPrototypeOf(TemporaryStorage.prototype), "list", this).call(this).then(function (result) {
-        if (_this2.touchOnList) {
+        if (_this3.touchOnList) {
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
@@ -192,7 +185,7 @@ function (_Storage) {
             for (var _iterator = result[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var index = _step.value;
 
-              _this2.touch(index);
+              _this3.touch(index);
             }
           } catch (err) {
             _didIteratorError = true;
@@ -216,14 +209,14 @@ function (_Storage) {
   }, {
     key: "find",
     value: function find(recordOrIndex) {
-      var _this3 = this;
+      var _this4 = this;
 
       return _get(_getPrototypeOf(TemporaryStorage.prototype), "find", this).call(this, recordOrIndex).then(function (result) {
-        if (_this3.touchOnFind) {
+        if (_this4.touchOnFind) {
           var index;
-          if (typeof recordOrIndex === "string") index = recordOrIndex;else index = _this3.indexIn(recordOrIndex);
+          if (typeof recordOrIndex === "string") index = recordOrIndex;else index = _this4.indexIn(recordOrIndex);
 
-          _this3.touch(index);
+          _this4.touch(index);
         }
 
         return result;
@@ -232,10 +225,10 @@ function (_Storage) {
   }, {
     key: "update",
     value: function update(record) {
-      var _this4 = this;
+      var _this5 = this;
 
       return _get(_getPrototypeOf(TemporaryStorage.prototype), "update", this).call(this, record).then(function (result) {
-        _this4.touch(_this4.indexIn(record));
+        _this5.touch(_this5.indexIn(record));
 
         return result;
       });
@@ -250,10 +243,10 @@ function (_Storage) {
   }, {
     key: "replace",
     value: function replace(record) {
-      var _this5 = this;
+      var _this6 = this;
 
       return _get(_getPrototypeOf(TemporaryStorage.prototype), "replace", this).call(this, record).then(function (result) {
-        _this5.touch(_this5.indexIn(record));
+        _this6.touch(_this6.indexIn(record));
 
         return result;
       });
@@ -261,12 +254,12 @@ function (_Storage) {
   }, {
     key: "remove",
     value: function remove(recordOrIndex) {
-      var _this6 = this;
+      var _this7 = this;
 
       var index;
       if (typeof recordOrIndex === "string") index = recordOrIndex;else index = this.indexIn(recordOrIndex);
       return _get(_getPrototypeOf(TemporaryStorage.prototype), "remove", this).call(this, recordOrIndex).then(function (result) {
-        delete _this6._touched[index];
+        delete _this7._touched[index];
         return result;
       });
     }
