@@ -52,7 +52,6 @@ TemporaryStorage Defaults:
 {
   scheduler: true,
   ttl: 1000*60*60*24,
-  minWipeInterval: 1000*60,
   touchOnFind: true,
   touchOnList: true
 }
@@ -87,6 +86,12 @@ schedule(time)
 Wipe all outdated data manually. Usually not necessary.
 ```javascript
 wipe()
+```
+
+### touch
+Restart the ttl of the given record.
+```javascript
+touch(recordOrIndex)
 ```
 
 ## Development

@@ -56,9 +56,12 @@ export class TemporaryStorage extends Storage {
     if (next) this.schedule(next + this.ttl)
   }
 
-  touch(sid) {
+  touch(recordOrIndex) {
+    let index
+    if (typeof recordOrIndex === "string") index = recordOrIndex
+    else index = this.indexIn(recordOrIndex)
     const now = Date.now()
-    this._touched[sid] = now
+    this._touched[index] = now
     this.schedule(now + this.ttl)
   }
 
