@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@rnd7/rum-maker": "^1.0.18",
+    "@rnd7/rum-publisher": "^1.0.54",
     "@rnd7/rum-tester": "^1.0.20"
   }
 }
